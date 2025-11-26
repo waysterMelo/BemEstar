@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View } from '../types';
-import { Menu, X, Brain } from 'lucide-react';
+import { 
+  Home, 
+  BookOpen, 
+  LayoutGrid, 
+  Briefcase, 
+  MessageCircle,
+  Sparkles
+} from 'lucide-react';
 
 interface HeaderProps {
   currentView: View;
@@ -8,108 +15,79 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ currentView, setView }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
+  // Smart hide/show on scroll
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false); // Hide on scroll down
+      } else {
+        setIsVisible(true); // Show on scroll up
+      }
+      setLastScrollY(currentScrollY);
+    };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   const navItems = [
-    { label: 'Início', value: View.HOME },
-    { label: 'Filosofia', value: View.ABOUT },
-    { label: 'Serviços', value: View.SERVICES },
-    { label: 'Vagas', value: View.CAREERS },
+    { label: 'Início', value: View.HOME, icon: Home },
+    { label: 'Sobre', value: View.ABOUT, icon: BookOpen },
+    { label: 'Serviços', value: View.SERVICES, icon: LayoutGrid },
+    { label: 'Vagas', value: View.CAREERS, icon: Briefcase },
+    { label: 'Contato', value: View.CONTACT, icon: MessageCircle },
   ];
 
-  const handleNavClick = (view: View) => {
-    setView(view);
-    setIsOpen(false);
-  };
-
   return (
-    <nav className={`fixed top-6 left-0 right-0 z-50 transition-all duration-500 flex justify-center px-4`}>
-      <div 
-        className={`
-          flex items-center justify-between px-6 py-3 rounded-full transition-all duration-500
-          ${scrolled 
-            ? 'bg-alabaster-100/70 backdrop-blur-xl shadow-lg border border-white/40 w-full max-w-5xl' 
-            : 'bg-transparent w-full max-w-7xl'}
-        `}
-      >
-        {/* Logo */}
-        <div 
-          className="flex items-center gap-2 cursor-pointer group" 
-          onClick={() => setView(View.HOME)}
-        >
-          <div className="bg-sage-100 p-2 rounded-full group-hover:bg-sage-300 transition-colors duration-500">
-            <Brain className="h-5 w-5 text-sage-900" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-serif font-bold text-lg leading-none tracking-tight text-sage-900">Bem Estar</span>
-          </div>
+    <>
+      {/* Top Brand Indicator (Minimalist) */}
+      <div className="fixed top-6 left-6 z-40 mix-blend-difference text-white opacity-80 pointer-events-none">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-5 h-5 animate-pulse" />
+          <span className="font-serif-fluid font-bold tracking-widest text-sm uppercase">Bem Estar AI</span>
         </div>
-
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center space-x-1">
-          {navItems.map((item) => (
-            <button
-              key={item.value}
-              onClick={() => handleNavClick(item.value)}
-              className={`
-                px-5 py-2 rounded-full text-sm font-medium transition-all duration-300
-                ${currentView === item.value
-                  ? 'bg-white/50 text-sage-900 shadow-sm'
-                  : 'text-sage-700 hover:text-sage-900 hover:bg-white/20'}
-              `}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div className="hidden md:block">
-          <button 
-            onClick={() => handleNavClick(View.CONTACT)}
-            className="
-              px-6 py-2.5 rounded-full text-sm font-medium text-alabaster-50 
-              bg-sage-900 hover:bg-sage-700 
-              transition-all duration-300 transform hover:scale-105 shadow-lg shadow-sage-900/10
-            "
-          >
-            Agendar Consulta
-          </button>
-        </div>
-
-        {/* Mobile Toggle */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 rounded-full hover:bg-black/5 text-sage-900"
-        >
-          {isOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
       </div>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div className="absolute top-20 left-4 right-4 bg-alabaster-100/95 backdrop-blur-2xl rounded-3xl p-6 shadow-2xl border border-white/20 animate-reveal origin-top">
-          <div className="flex flex-col space-y-2">
-            {[...navItems, { label: 'Contato', value: View.CONTACT }].map((item) => (
+      {/* Dynamic Dock (Bottom Navigation) */}
+      <div className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 ease-out ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-24 opacity-0'}`}>
+        <div className="glass-dock px-3 py-3 rounded-full flex items-center gap-2 md:gap-3 scale-90 md:scale-100 origin-bottom">
+          
+          {navItems.map((item) => {
+            const isActive = currentView === item.value;
+            const Icon = item.icon;
+            
+            return (
               <button
                 key={item.value}
-                onClick={() => handleNavClick(item.value)}
-                className="text-left px-4 py-3 rounded-xl text-sage-900 hover:bg-sage-100/50 transition-colors font-medium text-lg"
+                onClick={() => setView(item.value)}
+                className={`
+                  relative group p-3 rounded-full transition-all duration-300 ease-out
+                  flex items-center justify-center
+                  ${isActive 
+                    ? 'bg-black text-white shadow-lg scale-110' 
+                    : 'text-gray-500 hover:bg-white/50 hover:text-black hover:scale-110'}
+                `}
               >
-                {item.label}
+                <Icon className={`w-5 h-5 md:w-6 md:h-6 ${isActive ? 'stroke-[2px]' : 'stroke-[1.5px]'}`} />
+                
+                {/* Tooltip */}
+                <span className="absolute -top-12 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/80 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap backdrop-blur-md pointer-events-none">
+                  {item.label}
+                </span>
+
+                {/* Active Dot */}
+                {isActive && (
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full"></span>
+                )}
               </button>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      )}
-    </nav>
+      </div>
+    </>
   );
 };
 

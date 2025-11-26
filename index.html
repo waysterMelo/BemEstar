@@ -3,101 +3,122 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bem Estar | Arquitetura Emocional & Carreira</title>
+    <title>Bem Estar | Biomimetic Intelligence</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              alabaster: {
-                50: '#F9F8F6',
-                100: '#F3F2EE', // Main Background
-                200: '#EAE8E2',
-                900: '#2A2927',
+              pearl: {
+                50: '#FBFBFD',
+                100: '#F5F5F7', // Main Interface
+                200: '#EAEAEF',
+                900: '#1D1D1F', // Text Primary
               },
-              sage: {
-                100: '#E3EBE7',
-                300: '#B8C9C1',
-                500: '#8DA399', // Primary Brand
-                700: '#4A5D55',
-                900: '#2C3A35',
+              iridescent: {
+                start: '#E0E7FF', // Indigo tint
+                middle: '#F0ABFC', // Fuchsia tint
+                end: '#A5F3FC',    // Cyan tint
               },
-              clay: {
-                100: '#F5EBE6',
-                400: '#C29B82', // Accent
-                900: '#5C4030',
+              biolum: {
+                cyan: '#06b6d4',
+                purple: '#8b5cf6',
+                lime: '#84cc16'
               }
             },
             fontFamily: {
               sans: ['Space Grotesk', 'sans-serif'],
-              serif: ['Playfair Display', 'serif'],
+              serif: ['Cormorant Garamond', 'serif'],
             },
             backgroundImage: {
               'noise': "url('https://www.transparenttextures.com/patterns/noise-lines.png')",
-              'aurora': 'conic-gradient(at top right, #B8C9C1, #F3F2EE, #E3EBE7)',
+              'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+              'conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
             },
             animation: {
-              'float': 'float 8s ease-in-out infinite',
-              'float-delayed': 'float 8s ease-in-out 4s infinite',
-              'breathe': 'breathe 6s ease-in-out infinite',
-              'reveal': 'reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards',
-              'blur-in': 'blurIn 1s ease-out forwards',
+              'blob': 'blob 10s infinite',
+              'float-slow': 'float 8s ease-in-out infinite',
+              'shimmer': 'shimmer 2.5s linear infinite',
+              'morph': 'morph 8s ease-in-out infinite',
+              'scale-in': 'scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
             },
             keyframes: {
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              },
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-20px)' },
               },
-              breathe: {
-                '0%, 100%': { opacity: '0.6', transform: 'scale(1)' },
-                '50%': { opacity: '0.8', transform: 'scale(1.05)' },
+              morph: {
+                '0%, 100%': { borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' },
+                '50%': { borderRadius: '30% 60% 70% 40% / 50% 60% 30% 60%' },
               },
-              reveal: {
-                '0%': { opacity: '0', transform: 'translateY(40px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
+              shimmer: {
+                '0%': { backgroundPosition: '-1000px 0' },
+                '100%': { backgroundPosition: '1000px 0' },
               },
-              blurIn: {
-                '0%': { filter: 'blur(10px)', opacity: '0' },
-                '100%': { filter: 'blur(0)', opacity: '1' },
+              scaleIn: {
+                '0%': { opacity: '0', transform: 'scale(0.9)' },
+                '100%': { opacity: '1', transform: 'scale(1)' },
               }
             }
           }
         }
       }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400;1,600&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
       body { 
         font-family: 'Space Grotesk', sans-serif; 
-        background-color: #F3F2EE;
-        color: #2C3A35;
+        background-color: #FBFBFD;
+        color: #1D1D1F;
+        overflow-x: hidden;
       }
-      .font-serif-italic {
-        font-family: 'Playfair Display', serif;
-        font-style: italic;
+      .font-serif-fluid {
+        font-family: 'Cormorant Garamond', serif;
       }
+      
       /* Smooth Scrolling */
       html { scroll-behavior: smooth; }
       
-      /* Noise Overlay Class */
-      .bg-noise-overlay {
+      /* High-Res Noise */
+      .bg-noise-high {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         pointer-events: none;
-        z-index: 50;
-        opacity: 0.04;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        z-index: 0;
+        opacity: 0.35;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+      }
+
+      /* Liquid Glass Classes */
+      .glass-membrane {
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
       }
       
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar { width: 6px; }
-      ::-webkit-scrollbar-track { background: #F3F2EE; }
-      ::-webkit-scrollbar-thumb { background: #B8C9C1; border-radius: 10px; }
-      ::-webkit-scrollbar-thumb:hover { background: #8DA399; }
+      .glass-dock {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+      }
+
+      /* Hide Scrollbar but keep functionality */
+      ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
   <script type="importmap">
 {
@@ -113,6 +134,6 @@
 </head>
   <body>
     <div id="root"></div>
-    <div class="bg-noise-overlay"></div>
+    <div class="bg-noise-high"></div>
   </body>
 </html>
