@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, JobPosition } from './types';
 import Header from './components/Header';
 import CareerAssistant from './components/CareerAssistant';
@@ -7,284 +7,269 @@ import {
   Briefcase, 
   MapPin, 
   Phone, 
-  Mail, 
   CheckCircle2, 
   ArrowRight, 
-  Star,
   Brain,
   Building2,
   Search,
-  X,
   Check,
-  AlertCircle,
   Loader2,
   Users,
-  Trophy,
-  Calendar,
-  Quote,
-  ArrowUpRight
+  Leaf,
+  ArrowUpRight,
+  Globe,
+  Clock,
+  DollarSign,
+  ChevronLeft,
+  GraduationCap,
+  Award,
+  UploadCloud,
+  Quote
 } from 'lucide-react';
 
-// --- Mock Data ---
+// --- Mock Data Expanded ---
 const JOBS: JobPosition[] = [
   {
     id: '1',
     title: 'Psicólogo(a) Clínico(a)',
-    company: 'Bem Estar Psicologia',
+    company: 'Bem Estar Interno',
     type: 'PJ / Autônomo',
     location: 'São Paulo, SP (Híbrido)',
-    description: 'Procuramos profissional apaixonado pela abordagem TCC ou Psicanálise para integrar nossa equipe multidisciplinar.',
-    requirements: ['CRP Ativo', 'Experiência mínima de 2 anos', 'Especialização concluída ou em andamento']
+    description: 'Procuramos profissional apaixonado pela abordagem TCC ou Psicanálise para integrar nossa equipe clínica multidisciplinar.',
+    requirements: [
+      'CRP Ativo e regularizado', 
+      'Experiência clínica mínima de 2 anos', 
+      'Pós-graduação em andamento ou concluída',
+      'Disponibilidade para atendimentos noturnos (pelo menos 1 dia)'
+    ],
+    responsibilities: [
+      'Realizar atendimentos psicoterapêuticos individuais.',
+      'Participar de reuniões de supervisão clínica quinzenais.',
+      'Elaborar prontuários e documentos psicológicos conforme normas do CFP.'
+    ],
+    benefits: [
+      'Supervisão Clínica Inclusa',
+      'Sistema de Gestão de Pacientes',
+      'Infraestrutura de alto padrão nos Jardins',
+      'Divulgação e Marketing Pessoal'
+    ],
+    salary: 'Comissionamento Progressivo (70% repasse)'
   },
   {
     id: '2',
-    title: 'Analista de RH Sênior',
-    company: 'Indústria Farmacêutica (Confidencial)',
+    title: 'Head of People',
+    company: 'TechCorp (Confidencial)',
     type: 'CLT',
-    location: 'Guarulhos, SP',
-    description: 'Grande indústria busca especialista em Treinamento & Desenvolvimento e Cultura Organizacional.',
-    requirements: ['Inglês Avançado', 'Experiência em indústria', 'Vivência com implementação de cultura']
+    location: 'Remoto',
+    description: 'Liderar a estratégia de cultura e desenvolvimento organizacional de uma startup em hipercrescimento (Series B).',
+    requirements: [
+      'Inglês Fluente (Mandatório)', 
+      'Experiência prévia em Scale-ups de Tecnologia', 
+      'Vivência com implementação de PDI e Avaliação de Desempenho',
+      'Liderança de times multidisciplinares'
+    ],
+    responsibilities: [
+      'Estruturar a área de People & Culture do zero.',
+      'Desenhar a jornada do colaborador (Onboarding a Offboarding).',
+      'Gerir budget da área e KPIs de RH (Turnover, eNPS).'
+    ],
+    benefits: [
+      'Stock Options',
+      'Saúde e Odonto Bradesco Top Nacional',
+      'Auxílio Remoto e Equipamentos Apple',
+      'Gympass Gold'
+    ],
+    salary: 'R$ 25.000 - R$ 30.000'
   },
   {
     id: '3',
-    title: 'Assistente Administrativo',
-    company: 'Logística Express',
-    type: 'CLT',
-    location: 'São Paulo, SP (Zona Sul)',
-    description: 'Suporte administrativo operacional, controle de planilhas e atendimento a fornecedores.',
-    requirements: ['Ensino Médio Completo', 'Excel Intermediário', 'Organização e proatividade']
+    title: 'Analista de R&S Sênior',
+    company: 'Indústria Pharma Global',
+    type: 'Híbrido',
+    location: 'Guarulhos, SP',
+    description: 'Condução de processos seletivos end-to-end para posições técnicas, especialistas e média gestão.',
+    requirements: [
+      'Superior Completo em Psicologia ou RH', 
+      'Experiência robusta em Indústria Farmacêutica ou Bens de Consumo', 
+      'Conhecimento em LinkedIn Recruiter'
+    ],
+    responsibilities: [
+      'Alinhamento de perfil com gestores internacionais.',
+      'Hunting ativo de perfis especialistas.',
+      'Aplicação de testes comportamentais e técnicos.'
+    ],
+    benefits: [
+      'PLR Agressiva (até 4 salários)',
+      'Fretado e Restaurante no local',
+      'Previdência Privada'
+    ],
+    salary: 'A combinar'
   },
 ];
-
-const SERVICES = [
-  {
-    title: "Psicoterapia Individual",
-    desc: "Atendimento personalizado focado no autoconhecimento, tratamento de ansiedade e depressão.",
-    icon: <UserIcon className="h-6 w-6" />
-  },
-  {
-    title: "Recrutamento e Seleção",
-    desc: "Soluções de R&S para empresas. Encontramos o talento ideal com avaliação psicológica inclusa.",
-    icon: <Search className="h-6 w-6" />
-  },
-  {
-    title: "Avaliação Psicológica",
-    desc: "Laudos para cirurgias (bariátrica/vasectomia), admissional e concursos públicos.",
-    icon: <Briefcase className="h-6 w-6" />
-  },
-  {
-    title: "Terapia de Casal",
-    desc: "Mediação e fortalecimento de vínculos para casais que buscam melhorar a relação.",
-    icon: <Heart className="h-6 w-6" />
-  },
-  {
-    title: "Consultoria de RH",
-    desc: "Diagnóstico organizacional, pesquisa de clima e treinamento de lideranças.",
-    icon: <Building2 className="h-6 w-6" />
-  },
-  {
-    title: "Orientação Vocacional",
-    desc: "Suporte para jovens e adultos em momentos de decisão ou transição de carreira.",
-    icon: <Brain className="h-6 w-6" />
-  }
-];
-
-// Helper icon component
-function UserIcon({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-  );
-}
 
 // --- Components ---
 
-const ContactForm = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    interest: 'Agendamento de Psicoterapia',
-    message: ''
-  });
+interface GlassCardProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: string;
+  onClick?: () => void;
+}
 
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+const GlassCard: React.FC<GlassCardProps> = ({ children, className, delay = '0ms', onClick }) => (
+  <div 
+    onClick={onClick}
+    className={`bg-white/40 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-3xl p-8 hover:bg-white/60 transition-all duration-500 hover:-translate-y-1 hover:shadow-sage-900/5 ${className}`}
+    style={{ animationDelay: delay }}
+  >
+    {children}
+  </div>
+);
+
+const SectionTitle = ({ subtitle, title, align = 'center' }: { subtitle: string, title: React.ReactNode, align?: 'left' | 'center' }) => (
+  <div className={`mb-16 ${align === 'center' ? 'text-center' : 'text-left'} animate-reveal`}>
+    <span className="inline-block py-1 px-3 rounded-full bg-sage-100 text-sage-800 text-xs font-bold tracking-widest uppercase mb-4 border border-sage-200/50">
+      {subtitle}
+    </span>
+    <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-sage-900 leading-[1.1]">
+      {title}
+    </h2>
+  </div>
+);
+
+const ContactForm = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const validators = {
-    name: (val: string) => val.length >= 3,
-    email: (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
-    phone: (val: string) => val.length >= 10,
-    message: (val: string) => val.length >= 5,
-    interest: () => true
-  };
-
-  const isValid = (field: keyof typeof formData) => validators[field](formData[field]);
-  
-  const handleBlur = (field: string) => {
-    setTouched(prev => ({ ...prev, [field]: true }));
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!Object.keys(formData).every(key => isValid(key as keyof typeof formData))) return;
-
     setIsSubmitting(true);
-    // Simulating API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     setIsSubmitting(false);
     setIsSuccess(true);
   };
 
-  const getInputClass = (field: keyof typeof formData) => {
-    const base = "w-full pl-4 pr-10 py-3 rounded-lg border outline-none transition-all duration-200";
-    if (!touched[field]) return `${base} border-gray-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-100`;
-    return isValid(field) 
-      ? `${base} border-green-500 focus:border-green-600 focus:ring-2 focus:ring-green-100 bg-green-50/30`
-      : `${base} border-red-400 focus:border-red-500 focus:ring-2 focus:ring-red-100 bg-red-50/30`;
+  if (isSuccess) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center text-center p-8">
+        <div className="w-16 h-16 bg-sage-100 rounded-full flex items-center justify-center mb-6">
+          <Check className="w-8 h-8 text-sage-600" />
+        </div>
+        <h3 className="font-serif text-2xl text-sage-900 mb-2">Recebemos seu contato</h3>
+        <p className="text-sage-600">Nossa equipe entrará em contato em breve.</p>
+        <button onClick={() => setIsSuccess(false)} className="mt-6 text-sm underline text-sage-800">Enviar nova mensagem</button>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="space-y-1">
+        <label className="text-xs font-bold uppercase tracking-wider text-sage-500 ml-1">Nome Completo</label>
+        <input 
+          required
+          type="text" 
+          className="w-full bg-white/50 border border-sage-200 rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-sage-400 focus:bg-white transition-all placeholder-sage-300"
+          placeholder="Como gostaria de ser chamado?"
+          value={formData.name}
+          onChange={e => setFormData({...formData, name: e.target.value})}
+        />
+      </div>
+      <div className="space-y-1">
+        <label className="text-xs font-bold uppercase tracking-wider text-sage-500 ml-1">E-mail Corporativo ou Pessoal</label>
+        <input 
+          required
+          type="email" 
+          className="w-full bg-white/50 border border-sage-200 rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-sage-400 focus:bg-white transition-all placeholder-sage-300"
+          placeholder="seu@email.com"
+          value={formData.email}
+          onChange={e => setFormData({...formData, email: e.target.value})}
+        />
+      </div>
+      <div className="space-y-1">
+        <label className="text-xs font-bold uppercase tracking-wider text-sage-500 ml-1">Sua Mensagem</label>
+        <textarea 
+          required
+          rows={4}
+          className="w-full bg-white/50 border border-sage-200 rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-sage-400 focus:bg-white transition-all placeholder-sage-300 resize-none"
+          placeholder="Descreva sua necessidade (Terapia ou Consultoria RH)..."
+          value={formData.message}
+          onChange={e => setFormData({...formData, message: e.target.value})}
+        ></textarea>
+      </div>
+      <button 
+        disabled={isSubmitting}
+        className="w-full bg-sage-900 text-alabaster-50 font-medium py-4 rounded-xl hover:bg-sage-800 transition-all shadow-lg shadow-sage-900/10 flex items-center justify-center gap-2"
+      >
+        {isSubmitting ? <Loader2 className="animate-spin w-5 h-5"/> : 'Enviar Solicitação'} <ArrowRight className="w-4 h-4" />
+      </button>
+    </form>
+  );
+};
+
+const JobApplicationForm = ({ jobTitle, onCancel }: { jobTitle: string, onCancel: () => void }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setIsSubmitting(false);
+    setIsSuccess(true);
   };
 
   if (isSuccess) {
     return (
-      <div className="bg-white p-8 rounded-2xl shadow-lg border border-green-100 text-center animate-fade-in h-full flex flex-col justify-center items-center">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce-short">
-          <Check className="w-8 h-8 text-green-600" />
+      <div className="bg-white/60 backdrop-blur-xl p-8 rounded-3xl border border-sage-200 text-center animate-reveal">
+        <div className="w-16 h-16 bg-sage-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <Check className="w-8 h-8 text-sage-600" />
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">Mensagem Enviada!</h3>
-        <p className="text-gray-600 mb-6">
-          Obrigado pelo contato, <strong>{formData.name.split(' ')[0]}</strong>. Nossa equipe retornará em breve.
-        </p>
-        <button 
-          onClick={() => { setIsSuccess(false); setFormData({ name: '', email: '', phone: '', interest: 'Agendamento de Psicoterapia', message: '' }); setTouched({}); }}
-          className="text-brand-600 font-semibold hover:text-brand-700 underline decoration-2 underline-offset-4"
-        >
-          Enviar nova mensagem
+        <h3 className="font-serif text-2xl text-sage-900 mb-2">Aplicação Enviada!</h3>
+        <p className="text-sage-600 mb-6">Boa sorte! Nosso time de recrutamento analisará seu perfil para a vaga de {jobTitle}.</p>
+        <button onClick={onCancel} className="text-sm font-bold uppercase tracking-widest text-sage-800 hover:text-sage-500 transition-colors">
+          Voltar para Vagas
         </button>
       </div>
     );
   }
 
   return (
-    <div className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-400 to-brand-600"></div>
-      <h3 className="text-xl font-bold text-gray-900 mb-6">Envie sua mensagem</h3>
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="relative group">
-          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 ml-1">Nome ou Empresa</label>
-          <div className="relative">
-            <input 
-              type="text" 
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              onBlur={() => handleBlur('name')}
-              className={getInputClass('name')}
-              placeholder="Seu nome completo" 
-            />
-            <div className="absolute right-3 top-3.5 pointer-events-none">
-              {touched.name && isValid('name') && <Check className="w-5 h-5 text-green-500 animate-scale-in" />}
-              {touched.name && !isValid('name') && <AlertCircle className="w-5 h-5 text-red-500 animate-scale-in" />}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div className="relative">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 ml-1">E-mail</label>
-            <div className="relative">
-              <input 
-                type="email" 
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                onBlur={() => handleBlur('email')}
-                className={getInputClass('email')}
-                placeholder="seu@email.com" 
-              />
-              <div className="absolute right-3 top-3.5 pointer-events-none">
-                {touched.email && isValid('email') && <Check className="w-5 h-5 text-green-500 animate-scale-in" />}
-                {touched.email && !isValid('email') && <AlertCircle className="w-5 h-5 text-red-500 animate-scale-in" />}
-              </div>
-            </div>
-          </div>
-          <div className="relative">
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 ml-1">Telefone</label>
-            <div className="relative">
-              <input 
-                type="tel" 
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                onBlur={() => handleBlur('phone')}
-                className={getInputClass('phone')}
-                placeholder="(11) 99999-9999" 
-              />
-              <div className="absolute right-3 top-3.5 pointer-events-none">
-                {touched.phone && isValid('phone') && <Check className="w-5 h-5 text-green-500 animate-scale-in" />}
-                {touched.phone && !isValid('phone') && <AlertCircle className="w-5 h-5 text-red-500 animate-scale-in" />}
-              </div>
-            </div>
-          </div>
-        </div>
-
+    <div className="bg-white/60 backdrop-blur-xl p-8 rounded-3xl border border-sage-200 sticky top-24">
+      <h3 className="font-serif text-2xl text-sage-900 mb-1">Aplicar para a vaga</h3>
+      <p className="text-sm text-sage-500 mb-6">Envie seus dados para iniciar o processo.</p>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 ml-1">Interesse</label>
-          <div className="relative">
-            <select 
-              name="interest"
-              value={formData.interest}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition bg-white appearance-none cursor-pointer hover:bg-gray-50"
-            >
-              <option>Agendamento de Psicoterapia</option>
-              <option>Divulgar uma Vaga (Sou Empresa)</option>
-              <option>Candidatura a Vaga (Sou Candidato)</option>
-              <option>Outros Assuntos</option>
-            </select>
-            <div className="absolute right-4 top-3.5 pointer-events-none text-gray-500">
-              <ArrowRight className="w-4 h-4 rotate-90" />
-            </div>
-          </div>
+          <label className="text-xs font-bold uppercase tracking-wider text-sage-500 ml-1 block mb-1">Nome Completo</label>
+          <input required type="text" className="w-full bg-white/50 border border-sage-200 rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-sage-400 transition-all" />
         </div>
-
-        <div className="relative">
-          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 ml-1">Mensagem</label>
-          <textarea 
-            name="message"
-            rows={4} 
-            value={formData.message}
-            onChange={handleChange}
-            onBlur={() => handleBlur('message')}
-            className={getInputClass('message')}
-            placeholder="Como podemos ajudar?"
-          ></textarea>
-           <div className="absolute right-3 top-10 pointer-events-none">
-              {touched.message && isValid('message') && <Check className="w-5 h-5 text-green-500 animate-scale-in" />}
-           </div>
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-sage-500 ml-1 block mb-1">Email</label>
+          <input required type="email" className="w-full bg-white/50 border border-sage-200 rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-sage-400 transition-all" />
+        </div>
+        <div>
+          <label className="text-xs font-bold uppercase tracking-wider text-sage-500 ml-1 block mb-1">LinkedIn (URL)</label>
+          <input required type="url" className="w-full bg-white/50 border border-sage-200 rounded-xl px-4 py-3 outline-none focus:ring-1 focus:ring-sage-400 transition-all" />
+        </div>
+        
+        <div className="pt-2">
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-sage-300 border-dashed rounded-xl cursor-pointer bg-white/30 hover:bg-white/50 transition-colors">
+            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <UploadCloud className="w-8 h-8 text-sage-400 mb-2" />
+                <p className="text-sm text-sage-500"><span className="font-semibold">Clique para enviar CV</span> (PDF)</p>
+            </div>
+            <input type="file" className="hidden" accept=".pdf" required />
+          </label>
         </div>
 
         <button 
-          type="submit" 
           disabled={isSubmitting}
-          className="w-full bg-brand-600 text-white font-bold py-4 rounded-lg hover:bg-brand-700 active:scale-[0.99] transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full bg-sage-900 text-alabaster-50 font-medium py-4 rounded-xl hover:bg-sage-800 transition-all shadow-lg shadow-sage-900/10 flex items-center justify-center gap-2 mt-4"
         >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-5 h-5 mr-2 animate-spin" /> Enviando...
-            </>
-          ) : (
-            "Enviar Mensagem"
-          )}
+          {isSubmitting ? <Loader2 className="animate-spin w-5 h-5"/> : 'Confirmar Aplicação'}
         </button>
-        
-        <p className="text-xs text-center text-gray-400 mt-4">
-          Seus dados estão protegidos e serão usados apenas para este contato.
-        </p>
       </form>
     </div>
   );
@@ -292,258 +277,127 @@ const ContactForm = () => {
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>(View.HOME);
-  const [expandedJob, setExpandedJob] = useState<string | null>(null);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Reset job selection when changing views
+  const handleSetView = (view: View) => {
+    setCurrentView(view);
+    setSelectedJobId(null);
+    window.scrollTo(0, 0);
+  };
+
   const renderHome = () => (
-    <div className="animate-fade-in bg-gray-50">
-      {/* Hero Section Professional */}
-      <section className="relative bg-white overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
-        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-brand-50 rounded-full filter blur-3xl opacity-50"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center space-x-2 bg-brand-50 border border-brand-100 rounded-full px-4 py-2">
-                <span className="flex h-2 w-2 rounded-full bg-brand-600 animate-pulse"></span>
-                <span className="text-sm font-medium text-brand-800 uppercase tracking-wide">Excelência em Cuidado Humano</span>
+    <div className="min-h-screen">
+      {/* --- HERO SECTION --- */}
+      <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 px-4 overflow-hidden">
+        {/* Background Atmosphere */}
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-sage-200/30 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/3 animate-float pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-clay-100/40 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/4 animate-float-delayed pointer-events-none"></div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            {/* Text Content */}
+            <div className="lg:col-span-7 space-y-8 animate-reveal">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 border border-white/60 backdrop-blur-md">
+                <span className="w-2 h-2 rounded-full bg-sage-500 animate-pulse"></span>
+                <span className="text-xs font-bold tracking-widest uppercase text-sage-800">Psicologia Clínica & RH Estratégico</span>
               </div>
               
-              <h1 className="text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1]">
-                Saúde Mental & <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">
-                  Estratégia de RH
-                </span>
+              <h1 className="font-serif text-6xl md:text-7xl lg:text-8xl text-sage-900 leading-[0.9] tracking-tight">
+                Arquitetura <br/>
+                <span className="italic text-sage-500/80">Emocional</span>
               </h1>
               
-              <p className="text-lg text-gray-600 max-w-xl leading-relaxed">
-                A <strong>Bem Estar</strong> integra a psicologia clínica ao mundo corporativo. Oferecemos acolhimento terapêutico especializado e soluções estratégicas de recrutamento para empresas que valorizam pessoas.
+              <p className="text-xl text-sage-700 max-w-xl leading-relaxed font-light">
+                Um santuário para a mente e uma estratégia para a carreira. Unimos o cuidado terapêutico com a inteligência de recrutamento para construir vidas e empresas sólidas.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-wrap gap-4 pt-4">
                 <button 
-                  onClick={() => setCurrentView(View.CONTACT)}
-                  className="px-8 py-4 bg-brand-600 text-white rounded-xl font-bold hover:bg-brand-700 transition-all shadow-lg hover:shadow-brand-500/30 flex items-center justify-center group"
+                  onClick={() => handleSetView(View.CONTACT)}
+                  className="px-8 py-4 bg-sage-900 text-alabaster-50 rounded-full hover:bg-sage-800 transition-all shadow-xl shadow-sage-900/10 flex items-center gap-2 group"
                 >
-                  Agendar Atendimento
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  Agendar Atendimento <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button 
-                  onClick={() => setCurrentView(View.CAREERS)}
-                  className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-xl font-bold hover:bg-gray-50 transition-all hover:border-brand-300 flex items-center justify-center"
+                  onClick={() => handleSetView(View.CAREERS)}
+                  className="px-8 py-4 bg-white/50 backdrop-blur-sm border border-sage-200 text-sage-900 rounded-full hover:bg-white transition-all flex items-center gap-2"
                 >
                   Portal de Vagas
                 </button>
               </div>
-
-              <div className="pt-8 flex items-center gap-6 text-sm text-gray-500 font-medium">
-                <div className="flex items-center">
-                  <CheckCircle2 className="w-5 h-5 text-brand-500 mr-2" />
-                  Atendimento Humanizado
-                </div>
-                <div className="flex items-center">
-                  <CheckCircle2 className="w-5 h-5 text-brand-500 mr-2" />
-                  Consultoria Especializada
-                </div>
-              </div>
             </div>
 
-            <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl border-8 border-white">
-                <img 
-                  src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?auto=format&fit=crop&q=80&w=800" 
-                  alt="Profissional em reunião" 
-                  className="w-full h-[600px] object-cover"
-                />
-                {/* Floating Cards for Visual Interest */}
-                <div className="absolute bottom-8 left-8 bg-white/95 backdrop-blur p-4 rounded-xl shadow-lg max-w-xs border border-gray-100 animate-fade-in-up">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-brand-100 p-2 rounded-lg">
-                      <Users className="w-6 h-6 text-brand-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-gray-900">Recrutamento Assertivo</p>
-                      <p className="text-xs text-gray-500 mt-1">Encontramos o fit cultural ideal para sua empresa.</p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="absolute top-8 right-8 bg-white/95 backdrop-blur p-4 rounded-xl shadow-lg max-w-xs border border-gray-100 animate-fade-in-up delay-100">
-                  <div className="flex items-start gap-3">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <Heart className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-gray-900">Cuidado Clínico</p>
-                      <p className="text-xs text-gray-500 mt-1">Terapia individual, casal e avaliações.</p>
-                    </div>
+            {/* Visual Abstract Composition */}
+            <div className="lg:col-span-5 relative h-[500px] lg:h-[600px] hidden md:block">
+              <div className="absolute top-10 right-10 w-64 h-80 bg-white/30 backdrop-blur-2xl border border-white/40 rounded-[2rem] shadow-2xl overflow-hidden animate-float z-20">
+                <img src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&q=80&w=600" className="w-full h-full object-cover opacity-90 mix-blend-overlay" alt="Peace" />
+                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-sage-900/50 to-transparent">
+                  <div className="flex items-center gap-2 text-white">
+                    <Leaf className="w-4 h-4" />
+                    <span className="font-serif italic text-lg">Cuidado</span>
                   </div>
                 </div>
               </div>
-              <div className="absolute -z-10 top-10 right-10 w-full h-full border-2 border-brand-200 rounded-2xl"></div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Stats Bar */}
-      <div className="bg-brand-900 text-white py-12 border-y border-brand-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-brand-800/50">
-            <div>
-              <div className="text-4xl font-bold mb-1">15+</div>
-              <div className="text-brand-200 text-sm uppercase tracking-wider">Anos de Experiência</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-1">5k+</div>
-              <div className="text-brand-200 text-sm uppercase tracking-wider">Vidas Impactadas</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-1">200+</div>
-              <div className="text-brand-200 text-sm uppercase tracking-wider">Empresas Parceiras</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold mb-1">98%</div>
-              <div className="text-brand-200 text-sm uppercase tracking-wider">Satisfação</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Dual Section: Methodology */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">Soluções Integradas</h2>
-            <p className="text-gray-600 mt-4 max-w-2xl mx-auto">Atuamos em duas frentes principais para garantir o bem-estar completo: saúde individual e ambiente corporativo saudável.</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Card 1: Clinical */}
-            <div 
-              onClick={() => setCurrentView(View.SERVICES)}
-              className="group relative overflow-hidden rounded-3xl bg-white shadow-xl cursor-pointer border border-gray-100 transition-all hover:-translate-y-1"
-            >
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Brain className="w-48 h-48 text-brand-600" />
-              </div>
-              <div className="p-10 relative z-10">
-                <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mb-8 text-brand-600 shadow-sm">
-                  <UserIcon className="w-8 h-8" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Para Você e Sua Família</h3>
-                <p className="text-gray-600 mb-8 leading-relaxed">
-                  Atendimento clínico com profissionais especializados. Foco em TCC, Psicanálise e Avaliações Neuropsicológicas. Cuidamos de ansiedade, depressão e conflitos de relacionamento.
-                </p>
-                <ul className="space-y-3 mb-8 text-gray-600">
-                  <li className="flex items-center"><Check className="w-4 h-4 text-brand-500 mr-2"/> Psicoterapia Individual</li>
-                  <li className="flex items-center"><Check className="w-4 h-4 text-brand-500 mr-2"/> Terapia de Casal</li>
-                  <li className="flex items-center"><Check className="w-4 h-4 text-brand-500 mr-2"/> Orientação Vocacional</li>
-                </ul>
-                <span className="text-brand-600 font-bold flex items-center group-hover:translate-x-2 transition-transform">
-                  Conhecer Serviços Clínicos <ArrowRight className="ml-2 w-5 h-5" />
-                </span>
-              </div>
-            </div>
-
-            {/* Card 2: Corporate */}
-            <div 
-              onClick={() => setCurrentView(View.CONTACT)}
-              className="group relative overflow-hidden rounded-3xl bg-gray-900 shadow-xl cursor-pointer transition-all hover:-translate-y-1"
-            >
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                <Building2 className="w-48 h-48 text-white" />
-              </div>
-              <div className="p-10 relative z-10">
-                <div className="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center mb-8 text-white shadow-sm">
-                  <Briefcase className="w-8 h-8" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-4">Para Sua Empresa</h3>
-                <p className="text-gray-400 mb-8 leading-relaxed">
-                  Transforme seu RH. Atuamos como Headhunters para vagas estratégicas e oferecemos consultoria para melhorar o clima organizacional e a saúde mental dos colaboradores.
-                </p>
-                <ul className="space-y-3 mb-8 text-gray-300">
-                  <li className="flex items-center"><Check className="w-4 h-4 text-brand-400 mr-2"/> Recrutamento & Seleção</li>
-                  <li className="flex items-center"><Check className="w-4 h-4 text-brand-400 mr-2"/> Avaliação Psicológica Admissional</li>
-                  <li className="flex items-center"><Check className="w-4 h-4 text-brand-400 mr-2"/> Treinamentos Corporativos</li>
-                </ul>
-                <span className="text-white font-bold flex items-center group-hover:translate-x-2 transition-transform">
-                  Soluções para Empresas <ArrowRight className="ml-2 w-5 h-5" />
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Us */}
-      <section className="py-24 bg-white border-t border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="space-y-4">
-              <div className="bg-brand-100 w-12 h-12 rounded-lg flex items-center justify-center text-brand-600 mb-4">
-                <Trophy className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">Excelência Técnica</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Nossa equipe é formada exclusivamente por psicólogos com pós-graduação e vivência prática em grandes organizações.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <div className="bg-brand-100 w-12 h-12 rounded-lg flex items-center justify-center text-brand-600 mb-4">
-                <Calendar className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">Agilidade e Foco</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Processos de seleção ágeis sem perder a qualidade. Para pacientes, facilidade de agendamento e acolhimento imediato.
-              </p>
-            </div>
-            <div className="space-y-4">
-              <div className="bg-brand-100 w-12 h-12 rounded-lg flex items-center justify-center text-brand-600 mb-4">
-                <Heart className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900">Abordagem Humanizada</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Acreditamos que atrás de cada CPF ou CNPJ existem pessoas. Tratamos cada história com a singularidade que ela merece.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonial/CTA Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-brand-900"></div>
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="bg-brand-800 rounded-3xl p-12 lg:p-16 flex flex-col lg:flex-row items-center justify-between gap-12 shadow-2xl border border-brand-700/50">
-            <div className="lg:w-1/2 space-y-6">
-              <Quote className="w-12 h-12 text-brand-400 opacity-50" />
-              <h2 className="text-3xl font-bold text-white">
-                "A parceria com a Bem Estar mudou a dinâmica da nossa equipe. Contratações mais assertivas e um time muito mais saudável."
-              </h2>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-brand-200 rounded-full flex items-center justify-center text-brand-800 font-bold">
-                  MR
+              <div className="absolute bottom-20 left-10 w-72 h-64 bg-sage-900/5 backdrop-blur-xl border border-sage-900/10 rounded-3xl shadow-xl flex flex-col justify-between p-6 animate-float-delayed z-10">
+                <div className="flex justify-between items-start">
+                  <div className="p-3 bg-white rounded-xl shadow-sm">
+                    <Building2 className="w-6 h-6 text-sage-900" />
+                  </div>
+                  <span className="text-xs font-mono text-sage-500 bg-sage-100 px-2 py-1 rounded">MATCH</span>
                 </div>
                 <div>
-                  <p className="text-white font-bold">Mariana Rocha</p>
-                  <p className="text-brand-300 text-sm">Diretora de RH, TechSolutions</p>
+                  <h3 className="font-serif text-2xl text-sage-900">Talentos</h3>
+                  <p className="text-sm text-sage-600 mt-1">Conexões estratégicas para empresas.</p>
                 </div>
               </div>
             </div>
-            
-            <div className="lg:w-1/3 bg-white/5 backdrop-blur-sm p-8 rounded-2xl border border-white/10 text-center">
-              <h3 className="text-xl font-bold text-white mb-4">Pronto para começar?</h3>
-              <p className="text-brand-100 mb-8">Agende uma consulta ou solicite uma proposta para sua empresa hoje mesmo.</p>
-              <button 
-                onClick={() => setCurrentView(View.CONTACT)}
-                className="w-full bg-white text-brand-900 font-bold py-4 rounded-xl hover:bg-brand-50 transition flex items-center justify-center"
-              >
-                Entrar em Contato
-              </button>
+          </div>
+        </div>
+      </section>
+
+      {/* --- BENTO GRID: SERVICES TEASER --- */}
+      <section className="py-24 px-4 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <SectionTitle subtitle="Nossas Frentes" title={<>Equilíbrio entre <span className="italic font-light">Mente</span> e <span className="italic font-light">Matéria</span></>} />
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-auto md:h-[600px]">
+            <div className="md:col-span-2 relative group overflow-hidden rounded-[2.5rem] bg-clay-100/50 cursor-pointer" onClick={() => handleSetView(View.SERVICES)}>
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1606016159991-dfe492764e12?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-sage-900/80"></div>
+              <div className="relative h-full p-10 flex flex-col justify-end">
+                <Heart className="w-12 h-12 text-clay-400 mb-6 group-hover:scale-110 transition-transform duration-500" />
+                <h3 className="font-serif text-4xl text-sage-900 group-hover:text-white transition-colors">Psicoterapia Clínica</h3>
+                <p className="mt-4 text-sage-700 group-hover:text-white/80 max-w-md text-lg transition-colors">
+                  Atendimento individual e de casal. Um espaço seguro para elaborar conflitos e reencontrar o equilíbrio emocional.
+                </p>
+                <div className="mt-8 flex items-center gap-2 text-sage-900 group-hover:text-white font-medium uppercase tracking-widest text-sm">
+                  Saiba mais <ArrowUpRight className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <div className="flex-1 rounded-[2.5rem] bg-sage-200/30 border border-white/50 p-8 hover:bg-white/40 transition-colors cursor-pointer group relative overflow-hidden" onClick={() => handleSetView(View.SERVICES)}>
+                <div className="absolute -right-10 -top-10 w-32 h-32 bg-sage-300/20 rounded-full blur-2xl group-hover:bg-sage-400/30 transition-colors"></div>
+                <Briefcase className="w-10 h-10 text-sage-700 mb-4" />
+                <h3 className="font-serif text-2xl text-sage-900">Para Empresas</h3>
+                <p className="text-sm text-sage-600 mt-2">Recrutamento estratégico e diagnóstico de cultura organizacional.</p>
+              </div>
+
+              <div className="flex-1 rounded-[2.5rem] bg-sage-900 text-alabaster-50 p-8 flex flex-col justify-center relative overflow-hidden">
+                <div className="absolute inset-0 bg-noise opacity-10"></div>
+                <div className="relative z-10">
+                   <div className="text-5xl font-sans font-light mb-2">15+</div>
+                   <div className="text-sm uppercase tracking-widest text-sage-300 mb-6">Anos de História</div>
+                   <p className="text-sage-200 font-serif italic text-lg leading-relaxed">
+                     "Cuidamos de CPFs para fortalecer CNPJs."
+                   </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -551,315 +405,377 @@ const App: React.FC = () => {
     </div>
   );
 
-  const renderAbout = () => (
-    <section className="py-20 bg-white animate-fade-in">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row gap-16 items-center">
-          <div className="md:w-1/2 relative">
-            <div className="absolute inset-0 bg-brand-600 transform translate-x-4 translate-y-4 rounded-2xl"></div>
-            <img 
-              src="https://picsum.photos/600/800?woman" 
-              alt="Dra. Sônia" 
-              className="relative rounded-2xl shadow-xl w-full h-auto object-cover"
-            />
+  const renderServices = () => (
+    <div className="min-h-screen pt-32 pb-20 px-4">
+      <div className="max-w-7xl mx-auto">
+        <SectionTitle subtitle="Nosso Portfólio" title={<>Soluções <span className="italic">Integradas</span></>} />
+        
+        {/* Division 1: Clinical (Organic) */}
+        <div className="mb-24">
+          <div className="flex items-center gap-4 mb-8 animate-reveal">
+            <div className="p-3 bg-clay-100 rounded-full">
+              <Leaf className="w-6 h-6 text-clay-900" />
+            </div>
+            <h3 className="font-serif text-3xl text-sage-900 italic">Núcleo de Psicologia</h3>
+            <div className="h-px bg-sage-200 flex-1"></div>
           </div>
-          <div className="md:w-1/2">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Dra. Sônia</h2>
-            <h3 className="text-xl text-brand-600 font-medium mb-6">Psicóloga Clínica & Consultora de Carreira</h3>
-            <div className="space-y-4 text-gray-600 text-lg leading-relaxed">
-              <p>
-                Com mais de 15 anos de experiência, a Dra. Sônia une a psicologia clínica à expertise em Recursos Humanos.
-              </p>
-              <p>
-                Fundadora da Bem Estar, ela lidera uma equipe que cuida da saúde mental de pacientes e auxilia empresas a encontrarem os melhores profissionais, garantindo que a saúde emocional seja um pilar também no ambiente corporativo.
-              </p>
-              <div className="pt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 <div className="flex items-center">
-                    <CheckCircle2 className="text-brand-500 mr-2 h-5 w-5"/>
-                    <span>Psicologia Clínica</span>
-                 </div>
-                 <div className="flex items-center">
-                    <CheckCircle2 className="text-brand-500 mr-2 h-5 w-5"/>
-                    <span>Headhunter</span>
-                 </div>
-                 <div className="flex items-center">
-                    <CheckCircle2 className="text-brand-500 mr-2 h-5 w-5"/>
-                    <span>Avaliação Psicológica</span>
-                 </div>
-                 <div className="flex items-center">
-                    <CheckCircle2 className="text-brand-500 mr-2 h-5 w-5"/>
-                    <span>Mentoria de Carreira</span>
-                 </div>
-              </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+             <GlassCard className="group">
+               <div className="w-12 h-12 bg-sage-100 rounded-2xl flex items-center justify-center mb-6 text-sage-600 group-hover:bg-sage-900 group-hover:text-white transition-colors">
+                 <Users className="w-6 h-6" />
+               </div>
+               <h4 className="font-serif text-2xl text-sage-900 mb-3">Psicoterapia Individual</h4>
+               <p className="text-sage-600 leading-relaxed mb-4">
+                 Sessões focadas no autoconhecimento e tratamento de transtornos de ansiedade, depressão e burnout. Abordagens em TCC e Psicanálise.
+               </p>
+               <ul className="space-y-2 text-sm text-sage-500">
+                 <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-sage-400"/> Atendimento Online e Presencial</li>
+                 <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-sage-400"/> Sigilo Absoluto</li>
+               </ul>
+             </GlassCard>
+
+             <GlassCard className="group">
+               <div className="w-12 h-12 bg-sage-100 rounded-2xl flex items-center justify-center mb-6 text-sage-600 group-hover:bg-sage-900 group-hover:text-white transition-colors">
+                 <Heart className="w-6 h-6" />
+               </div>
+               <h4 className="font-serif text-2xl text-sage-900 mb-3">Terapia de Casal</h4>
+               <p className="text-sage-600 leading-relaxed mb-4">
+                 Mediação de conflitos e reconstrução de vínculos afetivos. Um espaço neutro para melhorar a comunicação.
+               </p>
+               <ul className="space-y-2 text-sm text-sage-500">
+                 <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-sage-400"/> Encontros Quinzenais</li>
+                 <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-sage-400"/> Dinâmicas Relacionais</li>
+               </ul>
+             </GlassCard>
+          </div>
+        </div>
+
+        {/* Division 2: Corporate (Structured) */}
+        <div>
+          <div className="flex items-center gap-4 mb-8 animate-reveal delay-100">
+            <div className="p-3 bg-sage-200 rounded-full">
+              <Briefcase className="w-6 h-6 text-sage-900" />
+            </div>
+            <h3 className="font-serif text-3xl text-sage-900 italic">Consultoria Corporativa</h3>
+            <div className="h-px bg-sage-200 flex-1"></div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white/50 border border-sage-200 p-8 rounded-3xl hover:border-sage-400 transition-colors">
+               <Search className="w-8 h-8 text-sage-700 mb-4" />
+               <h4 className="font-bold text-lg text-sage-900 mb-2">Recrutamento & Seleção</h4>
+               <p className="text-sm text-sage-600">Hunting estratégico de lideranças e especialistas. Avaliação de fit cultural e técnico.</p>
+            </div>
+            <div className="bg-white/50 border border-sage-200 p-8 rounded-3xl hover:border-sage-400 transition-colors">
+               <Brain className="w-8 h-8 text-sage-700 mb-4" />
+               <h4 className="font-bold text-lg text-sage-900 mb-2">Saúde Mental In Company</h4>
+               <p className="text-sm text-sage-600">Palestras, rodas de conversa e plantão psicológico para colaboradores.</p>
+            </div>
+            <div className="bg-white/50 border border-sage-200 p-8 rounded-3xl hover:border-sage-400 transition-colors">
+               <Award className="w-8 h-8 text-sage-700 mb-4" />
+               <h4 className="font-bold text-lg text-sage-900 mb-2">Treinamento de Líderes</h4>
+               <p className="text-sm text-sage-600">Desenvolvimento de soft skills, comunicação não-violenta e gestão humanizada.</p>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 
-  const renderServices = () => (
-    <section className="py-20 bg-gray-50 animate-fade-in">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Nossos Serviços</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Soluções integradas para saúde mental e gestão de pessoas. Atendemos indivíduos e empresas.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {SERVICES.map((service, idx) => (
-            <div key={idx} className="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 flex flex-col">
-              <div className="w-14 h-14 bg-brand-50 rounded-xl flex items-center justify-center mb-6 text-brand-600">
-                {service.icon}
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">{service.title}</h3>
-              <p className="text-gray-600 leading-relaxed mb-6 flex-grow">
-                {service.desc}
-              </p>
-              <button onClick={() => setCurrentView(View.CONTACT)} className="text-brand-600 font-medium hover:text-brand-700 inline-flex items-center mt-auto">
-                Saiba mais <ArrowRight className="ml-1 w-4 h-4" />
-              </button>
-            </div>
-          ))}
+  const renderAbout = () => (
+    <div className="min-h-screen pt-32 pb-20 px-4">
+       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          <div className="relative animate-reveal">
+             <div className="absolute inset-0 bg-sage-200 rounded-[3rem] rotate-3 blur-sm"></div>
+             <div className="relative rounded-[3rem] overflow-hidden shadow-2xl h-[600px]">
+                <img 
+                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800" 
+                  alt="Psicóloga Fundadora" 
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-sage-900 to-transparent text-white">
+                   <h3 className="font-serif text-3xl italic">Dra. Helena Vaz</h3>
+                   <p className="text-sage-200 text-sm tracking-wider uppercase">Fundadora & Psicóloga Chefe</p>
+                </div>
+             </div>
+          </div>
+
+          <div className="space-y-8 animate-reveal delay-200">
+             <h1 className="font-serif text-5xl md:text-6xl text-sage-900">
+                "A cura começa na <span className="italic text-clay-400">escuta</span>."
+             </h1>
+             <p className="text-lg text-sage-700 leading-relaxed font-light">
+                Com mais de 15 anos de experiência clínica e corporativa, fundei a Bem Estar com um propósito claro: derrubar os muros entre a saúde mental e o mundo do trabalho.
+             </p>
+             <p className="text-lg text-sage-700 leading-relaxed font-light">
+                Acredito que empresas não são apenas números, são ecossistemas de pessoas. E pessoas saudáveis constroem negócios extraordinários.
+             </p>
+
+             <div className="grid grid-cols-2 gap-6 pt-6">
+                <div className="p-4 bg-white/40 border border-sage-200 rounded-2xl">
+                   <GraduationCap className="w-6 h-6 text-sage-600 mb-2" />
+                   <h4 className="font-bold text-sage-900 text-sm">Mestrado em Psicologia</h4>
+                   <p className="text-xs text-sage-500">USP - Universidade de São Paulo</p>
+                </div>
+                <div className="p-4 bg-white/40 border border-sage-200 rounded-2xl">
+                   <Award className="w-6 h-6 text-sage-600 mb-2" />
+                   <h4 className="font-bold text-sage-900 text-sm">MBA em Gestão de Pessoas</h4>
+                   <p className="text-xs text-sage-500">FGV</p>
+                </div>
+             </div>
+
+             <div className="relative p-6 bg-sage-100 rounded-2xl mt-8">
+                <Quote className="absolute top-4 left-4 w-8 h-8 text-sage-300 opacity-50" />
+                <p className="text-sage-800 italic font-serif text-center relative z-10">
+                   "Nossa missão é acolher a singularidade de cada indivíduo enquanto potencializamos resultados coletivos."
+                </p>
+             </div>
+          </div>
+       </div>
+    </div>
+  );
+
+  const renderContact = () => (
+    <div className="pt-32 pb-20 min-h-screen px-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
+          <div className="animate-reveal">
+             <span className="text-clay-400 font-serif italic text-2xl block mb-4">Vamos conversar?</span>
+             <h1 className="text-5xl md:text-6xl font-sans font-light text-sage-900 mb-8">
+               Inicie sua jornada de <br/>transformação.
+             </h1>
+             <p className="text-lg text-sage-600 mb-12 leading-relaxed">
+               Seja para agendar uma sessão de terapia ou para discutir uma parceria corporativa, nossa equipe está pronta para ouvir você com total confidencialidade.
+             </p>
+
+             <div className="space-y-8">
+                <div className="flex items-start gap-4">
+                   <div className="w-12 h-12 rounded-2xl bg-sage-100 flex items-center justify-center text-sage-600">
+                      <Phone className="w-5 h-5"/>
+                   </div>
+                   <div>
+                      <h4 className="font-bold text-sage-900">Contato</h4>
+                      <p className="text-sage-600">(11) 99999-9999</p>
+                      <p className="text-sm text-sage-400">Seg-Sex, 08h às 19h</p>
+                   </div>
+                </div>
+                <div className="flex items-start gap-4">
+                   <div className="w-12 h-12 rounded-2xl bg-sage-100 flex items-center justify-center text-sage-600">
+                      <MapPin className="w-5 h-5"/>
+                   </div>
+                   <div>
+                      <h4 className="font-bold text-sage-900">Localização</h4>
+                      <p className="text-sage-600">Av. Paulista, 1000 - Jardins</p>
+                      <p className="text-sm text-sage-400">São Paulo, SP</p>
+                   </div>
+                </div>
+             </div>
+          </div>
+
+          <div className="bg-white/40 backdrop-blur-xl border border-white/60 rounded-[2rem] p-8 lg:p-12 shadow-2xl shadow-sage-900/5 animate-reveal delay-200">
+            <ContactForm />
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 
   const renderCareers = () => {
-    // Filter logic
-    const filteredJobs = JOBS.filter(job => {
-      const term = searchTerm.toLowerCase();
-      return (
-        job.title.toLowerCase().includes(term) ||
-        job.company.toLowerCase().includes(term) ||
-        job.location.toLowerCase().includes(term)
-      );
-    });
+     // --- JOB DETAIL VIEW ---
+     if (selectedJobId) {
+        const job = JOBS.find(j => j.id === selectedJobId);
+        if (!job) return null;
 
-    return (
-      <section className="py-20 bg-white animate-fade-in min-h-screen">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <span className="bg-brand-100 text-brand-700 px-3 py-1 rounded-full text-sm font-semibold">Recrutamento</span>
-            <h2 className="text-3xl font-bold text-gray-900 mt-4 mb-4">Portal de Oportunidades</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              A Bem Estar seleciona talentos para diversas empresas parceiras. 
-              Encontre sua próxima oportunidade profissional aqui.
-            </p>
-          </div>
-
-          {/* Search Bar */}
-          <div className="mb-10 relative max-w-2xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Buscar por cargo, empresa ou cidade..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl border border-gray-200 shadow-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition text-gray-700 placeholder-gray-400"
-              />
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              {searchTerm && (
+        return (
+          <div className="pt-32 pb-20 min-h-screen px-4 animate-reveal">
+             <div className="max-w-7xl mx-auto">
                 <button 
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  onClick={() => setSelectedJobId(null)} 
+                  className="flex items-center gap-2 text-sage-500 hover:text-sage-900 mb-8 transition-colors text-sm font-bold uppercase tracking-widest"
                 >
-                  <X className="h-5 w-5" />
+                  <ChevronLeft className="w-4 h-4" /> Voltar para Vagas
                 </button>
-              )}
-            </div>
-            <p className="text-xs text-center text-gray-500 mt-2">
-              Ex: "Psicólogo", "São Paulo", "Administrativo"
-            </p>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                   {/* Left Column: Details */}
+                   <div className="lg:col-span-2 space-y-8">
+                      <div className="bg-white/40 backdrop-blur-xl p-8 rounded-[2.5rem] border border-white/50 shadow-sm">
+                          <div className="flex flex-wrap gap-3 mb-6">
+                            <span className="px-3 py-1 rounded-full bg-sage-100 text-sage-700 text-xs font-bold">{job.type}</span>
+                            <span className="px-3 py-1 rounded-full bg-sage-100 text-sage-700 text-xs font-bold">{job.location}</span>
+                          </div>
+                          <h1 className="font-serif text-4xl md:text-5xl text-sage-900 mb-2">{job.title}</h1>
+                          <p className="text-sage-600 text-lg">{job.company}</p>
+
+                          <div className="h-px w-full bg-sage-200 my-8"></div>
+
+                          <div className="space-y-8">
+                             <div>
+                                <h3 className="font-bold text-sage-900 text-lg mb-3">Sobre a Vaga</h3>
+                                <p className="text-sage-600 leading-relaxed">{job.description}</p>
+                             </div>
+
+                             <div>
+                                <h3 className="font-bold text-sage-900 text-lg mb-3">Responsabilidades</h3>
+                                <ul className="space-y-2">
+                                   {job.responsibilities?.map((item, idx) => (
+                                     <li key={idx} className="flex items-start gap-3 text-sage-600">
+                                       <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-sage-400 flex-shrink-0"></div>
+                                       {item}
+                                     </li>
+                                   ))}
+                                </ul>
+                             </div>
+
+                             <div>
+                                <h3 className="font-bold text-sage-900 text-lg mb-3">Requisitos</h3>
+                                <ul className="space-y-2">
+                                   {job.requirements.map((item, idx) => (
+                                     <li key={idx} className="flex items-start gap-3 text-sage-600">
+                                       <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-sage-400 flex-shrink-0"></div>
+                                       {item}
+                                     </li>
+                                   ))}
+                                </ul>
+                             </div>
+
+                             <div>
+                                <h3 className="font-bold text-sage-900 text-lg mb-3">Benefícios</h3>
+                                <div className="flex flex-wrap gap-3">
+                                   {job.benefits?.map((item, idx) => (
+                                     <span key={idx} className="px-4 py-2 bg-white/60 border border-sage-100 rounded-xl text-sage-600 text-sm">
+                                       {item}
+                                     </span>
+                                   ))}
+                                </div>
+                             </div>
+
+                             {job.salary && (
+                               <div className="p-4 bg-sage-50 rounded-xl flex items-center gap-3">
+                                  <DollarSign className="w-5 h-5 text-sage-600" />
+                                  <span className="text-sage-800 font-medium">Faixa Salarial: {job.salary}</span>
+                               </div>
+                             )}
+                          </div>
+                      </div>
+
+                      <CareerAssistant jobTitle={job.title} />
+                   </div>
+
+                   {/* Right Column: Application */}
+                   <div className="lg:col-span-1">
+                      <JobApplicationForm jobTitle={job.title} onCancel={() => setSelectedJobId(null)} />
+                   </div>
+                </div>
+             </div>
           </div>
+        );
+     }
 
-          <div className="grid gap-6">
-            {filteredJobs.length > 0 ? (
-              filteredJobs.map((job) => (
-                <div key={job.id} className={`border rounded-xl overflow-hidden transition-all duration-300 ${expandedJob === job.id ? 'border-brand-200 ring-2 ring-brand-100 shadow-lg' : 'border-gray-200 hover:border-brand-200'}`}>
-                  <div 
-                    className="p-6 cursor-pointer bg-white flex flex-col md:flex-row md:items-start justify-between"
-                    onClick={() => setExpandedJob(expandedJob === job.id ? null : job.id)}
-                  >
-                    <div className="flex-grow">
-                      <div className="flex items-center justify-between mb-2 md:mb-0 md:float-right md:ml-4">
-                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${expandedJob === job.id ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 text-gray-600'}`}>
-                            {expandedJob === job.id ? 'Visualizando' : 'Clique para ver'}
-                         </span>
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900">{job.title}</h3>
-                      <p className="text-brand-600 font-semibold text-sm mt-1 flex items-center">
-                        <Building2 className="w-4 h-4 mr-1" />
-                        {job.company}
-                      </p>
-                      <div className="flex flex-wrap gap-3 mt-3 text-sm text-gray-500">
-                        <span className="flex items-center bg-gray-50 px-2 py-1 rounded"><Briefcase className="w-3 h-3 mr-1"/> {job.type}</span>
-                        <span className="flex items-center bg-gray-50 px-2 py-1 rounded"><MapPin className="w-3 h-3 mr-1"/> {job.location}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {expandedJob === job.id && (
-                    <div className="px-6 pb-6 bg-white border-t border-gray-100">
-                      <div className="py-4">
-                        <h4 className="font-semibold text-gray-900 mb-2">Descrição da Vaga:</h4>
-                        <p className="text-gray-600 mb-4">{job.description}</p>
-                        
-                        <h4 className="font-semibold text-gray-900 mb-2">Requisitos:</h4>
-                        <ul className="list-disc list-inside text-gray-600 space-y-1 mb-6">
-                          {job.requirements.map((req, i) => (
-                            <li key={i}>{req}</li>
-                          ))}
-                        </ul>
+     // --- JOB LIST VIEW ---
+     const filteredJobs = JOBS.filter(job => 
+       job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+       job.location.toLowerCase().includes(searchTerm.toLowerCase())
+     );
 
-                        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                          <button className="flex-1 bg-brand-600 text-white py-3 rounded-lg font-medium hover:bg-brand-700 transition text-center shadow-sm">
-                            Candidatar-se para esta Vaga
+     return (
+        <div className="pt-32 pb-20 min-h-screen px-4">
+           <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-16 animate-reveal">
+                 <h1 className="font-serif text-5xl md:text-6xl text-sage-900 mb-6">Portal de Talentos</h1>
+                 <p className="text-sage-600 max-w-xl mx-auto">
+                    Conectamos profissionais excepcionais a empresas que valorizam o capital humano.
+                 </p>
+              </div>
+
+              {/* Search */}
+              <div className="relative max-w-2xl mx-auto mb-16 animate-reveal">
+                 <input 
+                    type="text" 
+                    placeholder="Buscar por cargo ou cidade..." 
+                    className="w-full pl-14 pr-6 py-5 rounded-full bg-white/60 border border-sage-200 shadow-sm focus:shadow-lg focus:bg-white transition-all outline-none text-sage-900 placeholder-sage-400"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                 />
+                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-sage-400 w-5 h-5" />
+              </div>
+
+              <div className="grid gap-6">
+                 {filteredJobs.map((job) => (
+                    <GlassCard 
+                      key={job.id} 
+                      className="group cursor-pointer"
+                      onClick={() => setSelectedJobId(job.id)}
+                    >
+                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                          <div>
+                             <h3 className="font-serif text-2xl text-sage-900 mb-2 group-hover:text-clay-400 transition-colors">{job.title}</h3>
+                             <div className="flex items-center gap-4 text-sm text-sage-500">
+                                <span className="flex items-center gap-1"><Building2 className="w-4 h-4"/> {job.company}</span>
+                                <span className="flex items-center gap-1"><MapPin className="w-4 h-4"/> {job.location}</span>
+                                <span className="px-2 py-0.5 rounded bg-sage-100 text-sage-700 font-medium text-xs">{job.type}</span>
+                             </div>
+                          </div>
+                          <button className="px-6 py-3 rounded-full border border-sage-200 text-sage-700 font-medium hover:bg-sage-900 hover:text-white transition-all whitespace-nowrap">
+                             Ver Detalhes
                           </button>
-                          <button className="flex-1 bg-white border border-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-50 transition text-center">
-                            Compartilhar
-                          </button>
-                        </div>
-
-                        {/* Gemini Integration */}
-                        <div className="border-t border-gray-100 pt-6">
-                          <CareerAssistant jobTitle={`${job.title} na empresa ${job.company}`} />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-16 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900">Nenhuma vaga encontrada</h3>
-                <p className="text-gray-500 mt-2">Tente buscar por outros termos ou veja todas as oportunidades limpando a busca.</p>
-                <button 
-                  onClick={() => setSearchTerm('')}
-                  className="mt-4 text-brand-600 font-medium hover:underline"
-                >
-                  Limpar busca
-                </button>
+                       </div>
+                    </GlassCard>
+                 ))}
+                 
+                 {filteredJobs.length === 0 && (
+                   <div className="text-center text-sage-500 py-12">
+                     <p>Nenhuma vaga encontrada com esses termos.</p>
+                   </div>
+                 )}
               </div>
-            )}
-          </div>
-
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="p-8 bg-gray-50 rounded-2xl border border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Sou Candidato</h3>
-                  <p className="text-gray-600 mb-4">Não achou a vaga ideal? Deixe seu currículo em nosso banco de talentos geral.</p>
-                  <button className="text-brand-600 font-bold hover:underline flex items-center">
-                      Cadastrar Currículo <ArrowRight className="w-4 h-4 ml-1"/>
-                  </button>
-              </div>
-              <div className="p-8 bg-brand-50 rounded-2xl border border-brand-100">
-                  <h3 className="text-lg font-semibold text-brand-900 mb-2">Sou Empresa</h3>
-                  <p className="text-brand-700 mb-4">Precisa contratar? Deixe a Bem Estar cuidar do seu processo seletivo.</p>
-                  <button onClick={() => setCurrentView(View.CONTACT)} className="text-brand-600 font-bold hover:underline flex items-center">
-                      Falar com Consultor <ArrowRight className="w-4 h-4 ml-1"/>
-                  </button>
-              </div>
-          </div>
+           </div>
         </div>
-      </section>
-    );
-  };
-
-  const renderContact = () => (
-    <section className="py-20 bg-white animate-fade-in">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Fale Conosco</h2>
-            <p className="text-gray-600 mb-8 text-lg">
-              Seja para cuidar da sua saúde mental ou para contratar nossos serviços de recrutamento, estamos à disposição.
-            </p>
-            
-            <div className="space-y-6">
-              <div className="flex items-start">
-                <div className="bg-brand-100 p-3 rounded-lg">
-                   <Phone className="h-6 w-6 text-brand-600" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-medium text-gray-900">Telefone / WhatsApp</h3>
-                  <p className="text-gray-600">(11) 99999-9999</p>
-                  <p className="text-gray-500 text-sm">Seg a Sex, das 8h às 19h</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start">
-                <div className="bg-brand-100 p-3 rounded-lg">
-                   <Mail className="h-6 w-6 text-brand-600" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-medium text-gray-900">E-mail</h3>
-                  <p className="text-gray-600">contato@bemestarpsicologia.com.br</p>
-                  <p className="text-gray-600">recrutamento@bemestarpsicologia.com.br</p>
-                </div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="bg-brand-100 p-3 rounded-lg">
-                   <MapPin className="h-6 w-6 text-brand-600" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-medium text-gray-900">Endereço</h3>
-                  <p className="text-gray-600">Av. Paulista, 1000 - Sala 42</p>
-                  <p className="text-gray-600">Bela Vista, São Paulo - SP</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <ContactForm />
-        </div>
-      </div>
-    </section>
-  );
+     )
+  }
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
-      <Header currentView={currentView} setView={setCurrentView} />
+    <div className="min-h-screen bg-alabaster-100 text-sage-900 selection:bg-clay-400 selection:text-white">
+      <Header currentView={currentView} setView={handleSetView} />
       
-      <main className="flex-grow">
+      <main>
         {currentView === View.HOME && renderHome()}
-        {currentView === View.ABOUT && renderAbout()}
         {currentView === View.SERVICES && renderServices()}
-        {currentView === View.CAREERS && renderCareers()}
+        {currentView === View.ABOUT && renderAbout()}
         {currentView === View.CONTACT && renderContact()}
+        {currentView === View.CAREERS && renderCareers()}
       </main>
 
-      <footer className="bg-gray-900 text-gray-300 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="bg-sage-900 text-alabaster-100 py-20 px-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 border-t border-sage-800 pt-12">
           <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center text-white mb-4">
-              <Brain className="h-6 w-6 mr-2" />
-              <span className="text-xl font-bold">Bem Estar</span>
+            <div className="flex items-center gap-2 mb-6">
+              <Brain className="w-6 h-6 text-clay-400" />
+              <span className="font-serif text-2xl font-bold">Bem Estar</span>
             </div>
-            <p className="text-gray-400 max-w-sm">
-              Excelência em Psicologia Clínica e soluções estratégicas de Recrutamento & Seleção para conectar pessoas e empresas.
+            <p className="text-sage-400 max-w-xs leading-relaxed">
+              Arquitetura emocional para indivíduos e estratégia humana para negócios.
             </p>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-4">Navegação</h4>
-            <ul className="space-y-2">
-              <li className="hover:text-brand-400 cursor-pointer" onClick={() => setCurrentView(View.HOME)}>Início</li>
-              <li className="hover:text-brand-400 cursor-pointer" onClick={() => setCurrentView(View.ABOUT)}>Sobre Nós</li>
-              <li className="hover:text-brand-400 cursor-pointer" onClick={() => setCurrentView(View.SERVICES)}>Serviços</li>
-              <li className="hover:text-brand-400 cursor-pointer" onClick={() => setCurrentView(View.CAREERS)}>Portal de Vagas</li>
+            <h4 className="font-bold text-white mb-6">Explorar</h4>
+            <ul className="space-y-4 text-sage-400">
+              <li onClick={() => handleSetView(View.HOME)} className="hover:text-clay-400 cursor-pointer transition-colors">Início</li>
+              <li onClick={() => handleSetView(View.CAREERS)} className="hover:text-clay-400 cursor-pointer transition-colors">Vagas</li>
+              <li onClick={() => handleSetView(View.CONTACT)} className="hover:text-clay-400 cursor-pointer transition-colors">Contato</li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-4">Áreas</h4>
-            <ul className="space-y-2">
-              <li className="hover:text-brand-400 cursor-pointer" onClick={() => setCurrentView(View.CONTACT)}>Para Pacientes</li>
-              <li className="hover:text-brand-400 cursor-pointer" onClick={() => setCurrentView(View.CAREERS)}>Para Candidatos</li>
-              <li className="hover:text-brand-400 cursor-pointer" onClick={() => setCurrentView(View.CONTACT)}>Para Empresas</li>
+            <h4 className="font-bold text-white mb-6">Legal</h4>
+            <ul className="space-y-4 text-sage-400">
+              <li className="hover:text-clay-400 cursor-pointer transition-colors">Privacidade</li>
+              <li className="hover:text-clay-400 cursor-pointer transition-colors">Termos</li>
             </ul>
           </div>
+        </div>
+        <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-sage-800 text-center text-sage-600 text-sm">
+          © 2024 Bem Estar Psicologia. Todos os direitos reservados.
         </div>
       </footer>
     </div>

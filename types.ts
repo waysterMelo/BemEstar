@@ -14,6 +14,9 @@ export interface JobPosition {
   location: string;
   description: string;
   requirements: string[];
+  responsibilities: string[]; // Novo
+  benefits: string[]; // Novo
+  salary?: string; // Novo
 }
 
 export interface ServiceItem {

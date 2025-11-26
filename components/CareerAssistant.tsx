@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Send, User, Bot } from 'lucide-react';
+import { Sparkles, Send, Bot } from 'lucide-react';
 import { getCareerAdvice } from '../services/geminiService';
 
 interface CareerAssistantProps {
@@ -22,45 +22,56 @@ const CareerAssistant: React.FC<CareerAssistantProps> = ({ jobTitle }) => {
   };
 
   return (
-    <div className="mt-6 bg-brand-50 rounded-xl p-6 border border-brand-100">
-      <div className="flex items-center mb-4">
-        <Sparkles className="h-5 w-5 text-brand-600 mr-2" />
-        <h4 className="font-semibold text-brand-800">Assistente de Recrutamento IA</h4>
-      </div>
+    <div className="relative mt-8 group">
+      {/* Glass Container */}
+      <div className="absolute inset-0 bg-gradient-to-r from-sage-100/50 to-clay-100/50 rounded-2xl blur-xl opacity-40 group-hover:opacity-60 transition-opacity duration-700"></div>
       
-      <p className="text-sm text-gray-600 mb-4">
-        Tem dúvidas sobre a vaga de <strong>{jobTitle}</strong> ou quer dicas para seu currículo? Pergunte para nossa IA.
-      </p>
-
-      {response && (
-        <div className="mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
-          <div className="flex items-start">
-            <Bot className="h-5 w-5 text-brand-500 mt-1 mr-3 flex-shrink-0" />
-            <p className="text-sm text-gray-700 leading-relaxed">{response}</p>
+      <div className="relative bg-white/40 backdrop-blur-md rounded-2xl border border-white/60 p-6 shadow-sm">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sage-300 to-sage-500 flex items-center justify-center shadow-lg shadow-sage-500/20">
+            <Sparkles className="h-4 w-4 text-white" />
           </div>
+          <h4 className="font-serif font-bold italic text-sage-900 text-lg">IA Career Guide</h4>
         </div>
-      )}
+        
+        <p className="text-sm text-sage-700 mb-6 font-light">
+          Esta vaga de <strong className="font-medium">{jobTitle}</strong> exige preparação. Use nossa inteligência para analisar seu fit cultural ou tirar dúvidas técnicas.
+        </p>
 
-      <form onSubmit={handleAsk} className="relative">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Ex: Que habilidades são essenciais para esta vaga?"
-          className="w-full pl-4 pr-12 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-brand-400 focus:border-transparent outline-none text-sm"
-        />
-        <button
-          type="submit"
-          disabled={loading || !query.trim()}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1.5 bg-brand-600 text-white rounded-md hover:bg-brand-700 disabled:opacity-50 transition-colors"
-        >
-          {loading ? (
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
-        </button>
-      </form>
+        {response && (
+          <div className="mb-6 animate-reveal">
+            <div className="flex gap-4">
+              <div className="w-8 h-8 flex-shrink-0 rounded-full bg-white flex items-center justify-center border border-sage-100">
+                <Bot className="h-4 w-4 text-sage-600" />
+              </div>
+              <div className="bg-white/60 p-4 rounded-2xl rounded-tl-none border border-white/50 text-sm text-sage-800 leading-relaxed shadow-sm">
+                {response}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={handleAsk} className="relative">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Ex: Como me destacar nesta entrevista?"
+            className="w-full pl-5 pr-12 py-4 rounded-xl bg-white/50 border border-white/60 focus:bg-white focus:ring-1 focus:ring-sage-300 focus:border-sage-300 outline-none text-sage-900 placeholder-sage-400 transition-all duration-300"
+          />
+          <button
+            type="submit"
+            disabled={loading || !query.trim()}
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-sage-900 text-white rounded-lg hover:bg-sage-800 disabled:opacity-50 transition-all hover:scale-105 shadow-md"
+          >
+            {loading ? (
+              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
